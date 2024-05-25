@@ -38,11 +38,11 @@ X_validation = np.reshape(X_validation, (X_validation.shape[0], X_validation.sha
 
 model = keras.Sequential([
     Input(shape=(X_train.shape[1], 1)),
-    keras.layers.LSTM(units=100, return_sequences=True),
+    keras.layers.LSTM(units=50, return_sequences=True),
     keras.layers.Dropout(0.2),
-    keras.layers.LSTM(units=100, return_sequences=True),
+    keras.layers.LSTM(units=50, return_sequences=True),
     keras.layers.Dropout(0.2),
-    keras.layers.LSTM(units=100),
+    keras.layers.LSTM(units=50),
     keras.layers.Dropout(0.2),
     keras.layers.Dense(units=1)
 ])
@@ -91,10 +91,10 @@ plt.show()
 predicted_prices = series.tolist()
 
 for i in range(30):
-    last_known_price = predicted_prices[-len(series):]  # Son bilinen fiyatlar
-    last_known_price_scaled = sc.transform(np.array(last_known_price).reshape(-1, 1))  # Ölçekleme
-    predicted_price_scaled = model.predict(last_known_price_scaled.reshape(1, len(series), 1))  # Tahmin
-    predicted_price = sc.inverse_transform(predicted_price_scaled)  # Tahmini ölçekten geri dönüştür
+    last_known_price = predicted_prices[-len(series):]
+    last_known_price_scaled = sc.transform(np.array(last_known_price).reshape(-1, 1))
+    predicted_price_scaled = model.predict(last_known_price_scaled.reshape(1, len(series), 1))  
+    predicted_price = sc.inverse_transform(predicted_price_scaled) 
     print(f"Tahmin {i+1}. gün: {predicted_price[0][0]}")
     
     predicted_prices.append(predicted_price[0][0])  
@@ -103,11 +103,11 @@ for i in range(30):
 
     X_new, y_new = create_sequences(sc.transform(series[-len(series):].reshape(-1, 1)))
     X_new = np.reshape(X_new, (X_new.shape[0], X_new.shape[1], 1))
-    model.fit(X_new, y_new, epochs=1, batch_size=32, verbose=0)  # Yeni veriyle modeli güncelleyin
+    model.fit(X_new, y_new, epochs=1, batch_size=32, verbose=0) 
     
 plt.figure(figsize=(12, 6))
-plt.plot(predicted_prices[-60:], label='Son 30 Gün Tahminleri', color='red')  # Tüm tahminleri maviyle çiz
-plt.plot(predicted_prices[-60:-30], label='Son 60-30', color='blue')  # İlk 30 günü turuncuyla çiz
+plt.plot(predicted_prices[-60:], label='Son 30 Gün Tahminleri', color='red') 
+plt.plot(predicted_prices[-60:-30], label='Son 60-30', color='blue') 
 plt.xlabel('Günler')
 plt.ylabel('BTC Fiyatı (USD)')
 plt.title('Son 30 Günlük BTC Fiyat Tahmini')
@@ -115,8 +115,8 @@ plt.legend()
 plt.show()
 
 plt.figure(figsize=(24, 12))
-plt.plot(predicted_prices[:-30], label='Tüm Tahmin', color='blue')  # Son 30 gün hariç tüm tahminleri maviyle çiz
-plt.plot(range(len(predicted_prices)-30, len(predicted_prices)), predicted_prices[-30:], label='Son 30 Gün Tahminleri', color='red')  # Son 30 günü kırmızıyla çiz
+plt.plot(predicted_prices[:-30], label='Tüm Tahmin', color='blue')  
+plt.plot(range(len(predicted_prices)-30, len(predicted_prices)), predicted_prices[-30:], label='Son 30 Gün Tahminleri', color='red')  
 plt.xlabel('Günler')
 plt.ylabel('BTC Fiyatı (USD)')
 plt.title('Son 30 Günlük BTC Fiyat Tahmini')
