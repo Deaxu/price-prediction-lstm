@@ -49,7 +49,7 @@ model = keras.Sequential([
 
 model.compile(optimizer='adam', loss='mean_squared_error')
 
-history = model.fit(X_train, y_train, epochs=100, batch_size=32, validation_data=(X_validation, y_validation))
+history = model.fit(X_train, y_train, epochs=50, batch_size=32, validation_data=(X_validation, y_validation))
 
 plt.figure(figsize=(10, 5))
 plt.plot(history.history['loss'], label='Training Loss')
@@ -60,7 +60,7 @@ plt.ylabel('Loss')
 plt.legend()
 plt.show()
 
-btc_test = veriler[['Adj Close']]['2014-09-18':'2024-05-11']
+btc_test = veriler[['Adj Close']]['2024-01-01':'2024-05-11']
 real_stock_price = btc_test['Adj Close'].values.reshape(-1, 1)
 
 dataset_total = pd.concat((veriler['Adj Close'], btc_test['Adj Close']), axis=0)
@@ -93,7 +93,7 @@ predicted_prices = series.tolist()
 for i in range(30):
     last_known_price = predicted_prices[-len(series):]
     last_known_price_scaled = sc.transform(np.array(last_known_price).reshape(-1, 1))
-    predicted_price_scaled = model.predict(last_known_price_scaled.reshape(1, len(series), 1))  
+    predicted_price_scaled = model.predict(last_known_price_scaled.reshape(1, len(series), 1)) 
     predicted_price = sc.inverse_transform(predicted_price_scaled) 
     print(f"Tahmin {i+1}. gün: {predicted_price[0][0]}")
     
@@ -107,7 +107,7 @@ for i in range(30):
     
 plt.figure(figsize=(12, 6))
 plt.plot(predicted_prices[-60:], label='Son 30 Gün Tahminleri', color='red') 
-plt.plot(predicted_prices[-60:-30], label='Son 60-30', color='blue') 
+plt.plot(predicted_prices[-60:-30], label='Son 60-30', color='blue')  
 plt.xlabel('Günler')
 plt.ylabel('BTC Fiyatı (USD)')
 plt.title('Son 30 Günlük BTC Fiyat Tahmini')
@@ -115,8 +115,8 @@ plt.legend()
 plt.show()
 
 plt.figure(figsize=(24, 12))
-plt.plot(predicted_prices[:-30], label='Tüm Tahmin', color='blue')  
-plt.plot(range(len(predicted_prices)-30, len(predicted_prices)), predicted_prices[-30:], label='Son 30 Gün Tahminleri', color='red')  
+plt.plot(predicted_prices[:-30], label='Tüm Tahmin', color='blue')
+plt.plot(range(len(predicted_prices)-30, len(predicted_prices)), predicted_prices[-30:], label='Son 30 Gün Tahminleri', color='red')  # Son 30 günü kırmızıyla çiz
 plt.xlabel('Günler')
 plt.ylabel('BTC Fiyatı (USD)')
 plt.title('Son 30 Günlük BTC Fiyat Tahmini')
